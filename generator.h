@@ -102,5 +102,6 @@ namespace gen{
 		}
         return g;
     }
-};using namespace gen;
+};
 #endif
+
