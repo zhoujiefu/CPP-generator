@@ -11,6 +11,11 @@ namespace gen{
         s+=".in";
         freopen(s.data(),"w",stdout);
     }
+	template<typename T>
+	inline void write(vector<T>a){
+		for(auto x:a) cout<<x<<' ';
+		cout<<'\n';
+	}
     mt19937_64 rng(time(0));
     template<typename T>
     inline T rnd(T l,T r){
@@ -26,20 +31,20 @@ namespace gen{
         return rd(rng);
     }
     template <typename T>
-    typename T::value_type choice(const T& c){//´Ó¸ø¶¨ÈİÆ÷ÖĞËæ»úÑ¡È¡Ò»¸öÔªËØ 
+    typename T::value_type choice(const T& c){//ä»ç»™å®šå®¹å™¨ä¸­éšæœºé€‰å–ä¸€ä¸ªå…ƒç´  
         if(c.empty()) throw runtime_error("Cannot choose from an empty container.");
         auto it=begin(c);
         advance(it,rnd(0,c.size()));
         return *it;
     }
     template<typename T>
-    inline vector<T> rnd_array(int n,T l,T r){//Ëæ»ú³¤Îª n,a_i ÔÚ [l,r] µÄĞòÁĞ 
+    inline vector<T> rnd_array(int n,T l,T r){//éšæœºé•¿ä¸º n,a_i åœ¨ [l,r] çš„åºåˆ— 
         vector<T> a(n);
         rep(i,0,n-1) a[i]=rnd(l,r);
         return a;
     }
     template<typename T>
-    inline vector<T> rnd_arr_with_all_val(int n,T vl,T vr,T l,T r){//Ëæ»úÒ»¸ö³¤Îª n,vl<=a_i<=vr,ÇÒ°üº¬ [l,r] È«²¿ÔªËØ 
+    inline vector<T> rnd_arr_with_all_val(int n,T vl,T vr,T l,T r){//éšæœºä¸€ä¸ªé•¿ä¸º n,vl<=a_i<=vr,ä¸”åŒ…å« [l,r] å…¨éƒ¨å…ƒç´  
         vector<T> a;a.reserve(n);
         if(n<(r-l+1)) throw runtime_error("n must be at least r-l+1.");
         rep(i,l,r) a.push_back(i);
@@ -48,7 +53,7 @@ namespace gen{
         shuffle(a.begin(),a.end(),rng);
         return a;
     }
-    inline vector<int> rnd_permu(int n){//Ëæ»ú[1,n]µÄÅÅÁĞ 
+    inline vector<int> rnd_permu(int n){//éšæœº[1,n]çš„æ’åˆ— 
         vector<int> a(n);
         rep(i,0,n-1) a[i]=i+1;
         shuffle(a.begin(),a.end(),rng);
@@ -59,42 +64,42 @@ namespace gen{
         rep(i,1,n) s.push_back(choice(c));
         return s;
 	} 
-    inline string rnd_str(int n,int upper=0){//Ëæ»úÒ»¸ö×Ö·û´® 
+    inline string rnd_str(int n,int upper=0){//éšæœºä¸€ä¸ªå­—ç¬¦ä¸² 
         string c="abcdefghijklmnopqrstuvwxyz";
         if(upper) for(char &x:c) x=toupper(x);
         string s;s.reserve(n);
         rep(i,1,n) s.push_back(choice(c));
         return s;
     }
-    struct Graph{
+    struct Tree{
+        int n;bool val;
         struct edge{
             int u,v;ll w;
-            inline void print(bool val){
-                if(val) cout<<u<<' '<<v<<' '<<w<<'\n';
-                else cout<<u<<' '<<v<<'\n';
+            void print(bool val){
+                if(!val) cout<<u<<' '<<v<<'\n';
+				else cout<<u<<' '<<v<<' '<<w<<'\n';
             }
         };
-        int n,m;
-        bool val;
         vector<edge>g;
-        Graph(int nn,int mm,bool v){n=nn,m=mm,val=v;g.clear();}
-        inline void adde(int u,int v,ll w){
+        Tree(int nn,bool v){n=nn;g.clear();val=v;}
+        inline void adde(int u,int v,ll w=0){
             g.push_back({u,v,w});
         }
         inline void print(){
             for(edge i:g) i.print(val);
         }
     };
-    inline Graph rnd_tree(int n,int h,int rt,ll vl,ll vr){
-        Graph g(n,n-1,vl>0);
+    inline Tree rnd_tree(int n,int h,int rt,bool val=0,ll vl=0,ll vr=0){
+        Tree g(n,val);
         vector<int>a=rnd_arr_with_all_val(n-1,2,h,2,h);
         a.insert(a.begin()+rt-1,1);
         vector<vector<int>>v(h+1);
         for(int i=0;i<(int)a.size();++i) v[a[i]].push_back(i+1);
-        rep(i,2,h){
-            ll w=rnd(vl,vr);
-            for(int u:v[i]) g.adde(u,choice(v[i-1]),w);
-        }
+        rep(i,2,h) for(int u:v[i]){
+			ll w=rnd(vl,vr);
+			if(val) g.adde(u,choice(v[i-1]),w);
+			else g.adde(u,choice(v[i-1]));
+		}
         return g;
     }
 };using namespace gen;
